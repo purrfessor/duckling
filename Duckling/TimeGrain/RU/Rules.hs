@@ -28,7 +28,7 @@ grains = [ ("second (grain) ", "сек(унд(а|у|ы)?)?",   Second)
          , ("week (grain)"   , "недел(ь|я|и|ю)?",     Week)
          , ("month (grain)"  , "месяц(а|ев)?",        Month)
          , ("quarter (grain)", "квартал(а)?",         Quarter)
-         , ("year (grain)"   , "года?|лет",           Year)
+         , ("year (grain)"   , "год[ау]?|лет",        Year)
          ]
 
 rules :: [Rule]

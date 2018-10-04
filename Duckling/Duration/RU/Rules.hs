@@ -30,6 +30,7 @@ import Duckling.Regex.Types
 import Duckling.Types
 import Duckling.TimeGrain.Types
 import qualified Duckling.Numeral.Types as TNumeral
+import qualified Duckling.TimeGrain.Types as TG
 
 grainsMap :: HashMap Text Grain
 grainsMap = HashMap.fromList
@@ -108,6 +109,71 @@ rulePositiveDuration = Rule
       _ -> Nothing
   }
 
+hourDiminutive :: Rule
+hourDiminutive = Rule
+  { name = "hour diminutive"
+  , pattern =
+    -- [ regex "час[ои]к"
+    [ regex "часок|часик|часочек"
+    ]
+  , prod = \tokens -> case tokens of
+      _ -> Just . Token Duration . duration Hour $ 1
+  }
+
+minuteDiminutive :: Rule
+minuteDiminutive = Rule
+  { name = "minute diminutive"
+  , pattern =
+    [ regex "минутк.|минуток|минуточк.|минуточек"
+    ]
+  , prod = \tokens -> case tokens of
+      _ -> Just . Token Duration . duration Minute $ 1
+  }
+
+
+ruleDurationQuarterOfAnHour :: Rule
+ruleDurationQuarterOfAnHour = Rule
+  { name = "quarter of an hour"
+  , pattern =
+    [ regex "((одн(у|а|ой)|1)\\s)?четверт. (часа|ч|ч\\.)"
+    ]
+  , prod = \_ -> Just . Token Duration $ duration TG.Minute 15
+  }
+
+ruleDurationThreeQuartersOfAnHour :: Rule
+ruleDurationThreeQuartersOfAnHour = Rule
+  { name = "3 четверти часа"
+  , pattern =
+    [ numberWith TNumeral.value (== 3)
+    , regex "четверт(и|ей) (часа|ч|ч\\.)"
+    ]
+  , prod = \_ -> Just . Token Duration $ duration TG.Minute 45
+  }
+
+ruleDuration24h :: Rule
+ruleDuration24h = Rule
+  { name = "сутки"
+  , pattern =
+    [ regex "сутки"
+    ]
+  , prod = \_ -> Just . Token Duration $ duration TG.Hour 24
+  }
+
+ruleDuration24hN :: Rule
+ruleDuration24hN = Rule
+  { name = "<integer> суток"
+  , pattern =
+    [ numberWith TNumeral.value $ isInteger
+    , regex "сутки|суток"
+    ]
+    -- 
+  , prod = \tokens -> case tokens of
+      (Token Numeral NumeralData{TNumeral.value = v}:_) -> do
+        n <- TNumeral.getIntValue v
+        Just . Token Duration $ duration TG.Hour (n * 24)
+      _ -> Nothing
+  }
+
 rules :: [Rule]
 rules =
   [ rulePositiveDuration
@@ -115,4 +181,10 @@ rules =
   , ruleNumeralQuotes
   , ruleGrainAsDuration
   , ruleHalves
+  , hourDiminutive
+  , minuteDiminutive
+  , ruleDurationQuarterOfAnHour
+  , ruleDurationThreeQuartersOfAnHour
+  , ruleDuration24h
+  , ruleDuration24hN
   ]
