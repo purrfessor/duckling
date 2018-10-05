@@ -116,6 +116,11 @@ allExamples = concat
              , "часок"
              , "часочек"
              ]
+  , examples (DurationData 5 Hour)
+             [ "5 часов"
+             , "5 часиков"
+             , "5 часочков"
+             ]
   , examples (DurationData 1 Minute)
              [ "минута"
              , "минутка"

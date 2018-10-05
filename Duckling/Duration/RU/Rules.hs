@@ -116,23 +116,49 @@ hourDiminutive :: Rule
 hourDiminutive = Rule
   { name = "hour diminutive"
   , pattern =
-    -- [ regex "час[ои]к"
-    [ regex "часок|часик|часочек"
+    [ regex "час(ок|ик|очек)"
     ]
   , prod = \tokens -> case tokens of
       _ -> Just . Token Duration . duration Hour $ 1
+  }
+
+hoursDiminutive :: Rule
+hoursDiminutive = Rule
+  { name = "hour diminutive"
+  , pattern =
+    [ numberWith TNumeral.value $ isInteger
+    , regex "час(иков|очков)"
+    ]
+  , prod = \tokens -> case tokens of
+      Token Numeral NumeralData{TNumeral.value = v}:_ -> do
+        n <- TNumeral.getIntValue v
+        Just . Token Duration . duration Hour $ n
+      _ -> Nothing
   }
 
 minuteDiminutive :: Rule
 minuteDiminutive = Rule
   { name = "minute diminutive"
   , pattern =
-    [ regex "минутк.|минуток|минуточк.|минуточек"
+    [ regex "минутк.|минуточк."
     ]
   , prod = \tokens -> case tokens of
       _ -> Just . Token Duration . duration Minute $ 1
   }
 
+minutesDiminutive :: Rule
+minutesDiminutive = Rule
+  { name = "minute diminutive"
+  , pattern =
+    [ numberWith TNumeral.value $ isInteger
+    , regex "минутк.|минуток|минуточк.|минуточек"
+    ]
+  , prod = \tokens -> case tokens of
+      Token Numeral NumeralData{TNumeral.value = v}:_ -> do
+        n <- TNumeral.getIntValue v
+        Just . Token Duration . duration Minute $ n
+      _ -> Nothing
+  }
 
 ruleDurationQuarterOfAnHour :: Rule
 ruleDurationQuarterOfAnHour = Rule
@@ -201,7 +227,9 @@ rules =
   , ruleGrainAsDuration
   , ruleHalves
   , hourDiminutive
+  , hoursDiminutive
   , minuteDiminutive
+  , minutesDiminutive
   , ruleDurationQuarterOfAnHour
   , ruleDurationThreeQuartersOfAnHour
   , ruleDuration24h
