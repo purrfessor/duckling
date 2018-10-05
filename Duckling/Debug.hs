@@ -84,3 +84,15 @@ pnode sentence depth Node {children, rule, nodeRange = Range start end} = do
     out = Text.concat [ Text.replicate depth "-- ", name, " (", body, ")" ]
     name = fromMaybe "regex" rule
     body = Text.drop start $ Text.take end sentence
+
+--- temp
+rut x = debug (makeLocale RU $ Nothing) x [This Time]
+run x = debug (makeLocale RU $ Nothing) x [This Numeral]
+ruo x = debug (makeLocale RU $ Nothing) x [This Ordinal]
+rud x = debug (makeLocale RU $ Nothing) x [This Duration]
+rutd x = debug (makeLocale RU $ Nothing) x [This TimeGrain]
+
+ent x = debug (makeLocale EN $ Just US) x [This Time]
+enn x = debug (makeLocale EN $ Just US) x [This Numeral]
+eno x = debug (makeLocale EN $ Just US) x [This Ordinal]
+endd x = debug (makeLocale EN $ Just US) x [This Duration]

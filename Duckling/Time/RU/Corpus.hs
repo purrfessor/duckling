@@ -141,6 +141,9 @@ allExamples = concat
              [ "7 марта 1977 в 10"
              , "7 марта 1977 в 10 утра"
              ]
+  , examples (datetime (2013, 3, 16, 15, 0, 0) Hour)
+             [ "16 марта в 15"
+             ]
   , examples (datetime (2013, 2, 13, 0, 0, 0) Hour)
              [ "в полночь"
              , "в 12 ночи"
@@ -355,5 +358,13 @@ allExamples = concat
   , examples (datetimeInterval ((2013, 2, 18, 4, 0, 0), (2013, 2, 18, 12, 0, 0)) Hour)
              [ "в понедельник утром"
              , "утром в понедельник"
+             ]
+  , examples (datetimeHoliday (2014, 1, 1, 0, 0, 0) Day "Новый год")
+             [ "Новый Год"
+             ]
+  , examples (datetimeHoliday (2014, 1, 7, 0, 0, 0) Day "Рождество")
+             [ "Рождество"
+             , "Рождеству"
+             , "Рождества Христова"
              ]
   ]

@@ -757,7 +757,7 @@ ruleHODHalfOrdinal = Rule
   , prod = \tokens -> case tokens of
       (_:token:_) -> do
         h <- getIntValue token
-        if (1 < h && h < 13) then
+        if (0 < h && h < 13) then
           tt $ hourMinute True (h - 1) 30
         else
           Nothing
@@ -1773,6 +1773,19 @@ ruleEndOrBeginningOfWeek = Rule
       _ -> Nothing
   }
 
+rulePeriodicHolidays :: [Rule]
+rulePeriodicHolidays = mkRuleHolidays
+  [ ("Новый год", "нов...? год.?", monthDay 1 1 )
+  , ("Рождество", "рождеств.(\\s христов.)?", monthDay 1 7)
+  , ("День защитника отечества", "(дн.|день) защитника отечества", monthDay 2 23)
+  , ("международный женский день", "международн...? женск...? (дн.|день)", monthDay 3 8)
+  , ("Праздник Весны и Труда", "праздник.? весны и труда", monthDay 5 1)
+  , ("День Победы", "(дн.|день) победы", monthDay 5 9)
+  , ("День России", "(дн.|день) россии", monthDay 6 12)
+  , ("День народного единств", "(дн.|день) народного единств.?", monthDay 11 4)
+  ]
+
+
 ruleCycleThis :: Rule
 ruleCycleThis = Rule
   { name = "этот <cycle>"
@@ -2423,3 +2436,4 @@ rules =
   ++ ruleDaysOfWeek
   ++ ruleMonths
   ++ ruleSeasons
+  ++ rulePeriodicHolidays
