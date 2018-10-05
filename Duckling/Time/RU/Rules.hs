@@ -589,7 +589,7 @@ ruleTODOClock = Rule
 ruleHHMM :: Rule
 ruleHHMM = Rule
   { name = "hh:mm"
-  , pattern = [regex "((?:[01]?\\d)|(?:2[0-3]))[:.]([0-5]\\d)"]
+  , pattern = [regex "((?:[01]?\\d)|(?:2[0-3]))[:.-]([0-5]\\d)"]
   , prod = \tokens -> case tokens of
       (Token RegexMatch (GroupMatch (hh:mm:_)):_) -> do
         h <- parseInt hh
@@ -734,6 +734,12 @@ ruleHONumeralSuffix = Rule
       _ -> Nothing
   }
 
+hourToHalfToken :: Int -> Maybe Token
+hourToHalfToken h = if (1 <= h && h <= 12) then
+                      tt $ hourMinute True (h - 1) 30
+                    else
+                      Nothing
+
 ruleHODHalf :: Rule -- todo remove?
 ruleHODHalf = Rule
   { name = "half <hour-of-day>"
@@ -742,8 +748,8 @@ ruleHODHalf = Rule
     , Predicate isAnHourOfDay
     ]
   , prod = \tokens -> case tokens of
-      (_:Token Time TimeData{TTime.form = Just (TTime.TimeOfDay (Just hours) is12H)}:_) 
-        -> tt $ hourMinute is12H (hours - 1) 30
+      (_:Token Time TimeData{TTime.form = Just (TTime.TimeOfDay (Just hours) True)}:_) 
+        -> hourToHalfToken hours
       _ -> Nothing
   }
 
@@ -752,15 +758,12 @@ ruleHODHalfOrdinal = Rule
   { name = "half-long <hour-of-day-ordinal>"
   , pattern =
     [ regex "половин."
-    , dimension Ordinal -- todo fix: allow only 1..12
+    , dimension Ordinal
     ]
   , prod = \tokens -> case tokens of
       (_:token:_) -> do
         h <- getIntValue token
-        if (0 < h && h < 13) then
-          tt $ hourMinute True (h - 1) 30
-        else
-          Nothing
+        hourToHalfToken h
       _ -> Nothing
   }
 
@@ -769,15 +772,12 @@ ruleHODHalfShortOrdinal = Rule
   { name = "half-short <hour-of-day-ordinal>"
   , pattern =
     [ regex "пол"
-    , dimension Ordinal -- todo fix: allow only 1..12
+    , dimension Ordinal
     ]
   , prod = \tokens -> case tokens of
       (_:token:_) -> do
         h <- getIntValue token
-        if (0 < h && h < 13) then
-          tt $ hourMinute True (h - 1) 30
-        else
-          Nothing
+        hourToHalfToken h
       _ -> Nothing
   }
 
@@ -804,10 +804,7 @@ ruleHODHalfShortJoinedOrdinal = Rule
               "одиннадцатого" -> 11
               "двенадцатого"  -> 12
               _               -> -1
-        if h > 0 then
-          tt $ hourMinute True (h - 1) 30
-        else
-          Nothing
+        hourToHalfToken h
       _ -> Nothing
   }
 
@@ -1170,11 +1167,21 @@ rulePartOfDays2 = Rule
       _ -> Nothing
   }
 
+ruleEndOfDay :: Rule
+ruleEndOfDay = Rule
+  { name = "конец дня"
+  , pattern =
+    [ regex "(конец|конца|концу|конце) дня"
+    ]
+  , prod = \case 
+      _ -> tt . hour False $ 0
+  }
+
 ruleEarlyMorning :: Rule
 ruleEarlyMorning = Rule
-  { name = "early morning"
+  { name = "рано утром"
   , pattern =
-    [ regex "early ((in|hours of) the )?morning"
+    [ regex "ран(о|не..?) утром?"
     ]
   , prod = \_ -> Token Time . partOfDay . mkLatent <$>
       interval TTime.Open (hour False 4) (hour False 9)
@@ -1458,11 +1465,11 @@ ruleIntervalSlash = Rule
 
 ruleIntervalFrom :: Rule
 ruleIntervalFrom = Rule
-  { name = "from <datetime> - <datetime> (interval)"
+  { name = "c <datetime> по <datetime> (interval)"
   , pattern =
-    [ regex "from"
+    [ regex "с"
     , dimension Time
-    , regex "\\-|to|th?ru|through|(un)?til(l)?"
+    , regex "(и\\s)?(по|до)"
     , dimension Time
     ]
   , prod = \tokens -> case tokens of
@@ -1596,9 +1603,9 @@ ruleIntervalUntilTime = Rule
 
 ruleIntervalAfterFromSinceTime :: Rule
 ruleIntervalAfterFromSinceTime = Rule
-  { name = "from|since|after <time>"
+  { name = "с|после <time>"
   , pattern =
-    [ regex "from|since|(anytime |sometimes? )?after"
+    [ regex "со?|после"
     , dimension Time
     ]
   , prod = \tokens -> case tokens of
@@ -1608,10 +1615,10 @@ ruleIntervalAfterFromSinceTime = Rule
 
 ruleDaysOfWeek :: [Rule]
 ruleDaysOfWeek = mkRuleDaysOfWeek
-  [ ( "Monday"   , "понедельник(|[ауе])|пн\\.?"  )
-  , ( "Tuesday"  , "вторник(|[ауе])|вт\\.?"      )
+  [ ( "Monday"   , "понедельник[ауе]?|пн\\.?"  )
+  , ( "Tuesday"  , "вторник[ауе]?|вт\\.?"      )
   , ( "Wednesday", "сред[аыеу]|ср\\.?"           )
-  , ( "Thursday" , "четверг(|[ауе])|чт\\.?"      )
+  , ( "Thursday" , "четверг[ауе]?|чт\\.?"      )
   , ( "Friday"   , "пятниц[аыеу]|пт\\.?"         )
   , ( "Saturday" , "суббот[аыеу]|сб\\.?"         )
   , ( "Sunday"   , "воскресень[еяю]|вс\\.?"      )
@@ -1775,8 +1782,8 @@ ruleEndOrBeginningOfWeek = Rule
 
 rulePeriodicHolidays :: [Rule]
 rulePeriodicHolidays = mkRuleHolidays
-  [ ("Новый год", "нов...? год.?", monthDay 1 1 )
-  , ("Рождество", "рождеств.(\\s христов.)?", monthDay 1 7)
+  [ ("Новый год", "нов(ый|ого|ому|ом|ым) год.?", monthDay 1 1 )
+  , ("Рождество", "рождеств.(\\sхристов.)?", monthDay 1 7)
   , ("День защитника отечества", "(дн.|день) защитника отечества", monthDay 2 23)
   , ("международный женский день", "международн...? женск...? (дн.|день)", monthDay 3 8)
   , ("Праздник Весны и Труда", "праздник.? весны и труда", monthDay 5 1)
@@ -2363,6 +2370,7 @@ rules =
   , ruleHourPartOfDays
   , rulePartOfDays
   , rulePartOfDays2
+  , ruleEndOfDay
   , ruleEarlyMorning
   , rulePODIn
   , rulePODThis

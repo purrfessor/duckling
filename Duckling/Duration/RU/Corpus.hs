@@ -127,4 +127,7 @@ allExamples = concat
   , examples (DurationData 120 Hour)
              [ "5 суток"
              ]
+  , examples (DurationData 115 Minute)
+             [  "1 час 55 минут"
+             ]
   ]

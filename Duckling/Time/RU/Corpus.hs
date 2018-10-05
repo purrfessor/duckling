@@ -50,6 +50,7 @@ allExamples = concat
   , examples (datetime (2013, 2, 12, 15, 19, 0) Minute)
              [ "15:19"
              , "в 15 19"
+             , "в 15-19"
              , "в пятнадцать девятнадцать"
              ]
   , examples (datetime (1989, 10, 3, 0, 0, 0) Day)
@@ -358,6 +359,10 @@ allExamples = concat
   , examples (datetimeInterval ((2013, 2, 18, 4, 0, 0), (2013, 2, 18, 12, 0, 0)) Hour)
              [ "в понедельник утром"
              , "утром в понедельник"
+             ]
+  , examples (datetimeInterval ((2013, 2, 11, 0, 0, 0), (2013, 2, 14, 0, 0, 0)) Day)
+             [ "с понедельника по среду"
+             , "с понедельника до среды"
              ]
   , examples (datetimeHoliday (2014, 1, 1, 0, 0, 0) Day "Новый год")
              [ "Новый Год"
