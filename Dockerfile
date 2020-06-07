@@ -9,7 +9,7 @@ RUN mkdir /log
 
 WORKDIR /duckling
 
-ADD package.yaml .
+ADD stack.yaml .
 
 ENV LANG=C.UTF-8
 
