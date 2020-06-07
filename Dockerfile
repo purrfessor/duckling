@@ -17,4 +17,6 @@ RUN stack setup
 # '-j1' flag to force the build to run sequentially.
 RUN stack build
 
+ENV LANG C.UTF-8
+
 ENTRYPOINT stack exec duckling-example-exe
