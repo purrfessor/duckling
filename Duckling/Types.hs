@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE AllowAmbiguousTypes #-}
@@ -13,7 +12,9 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NoRebindableSyntax #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
@@ -27,21 +28,27 @@ import Data.Aeson
 import Data.GADT.Compare
 import Data.GADT.Show
 import Data.Hashable
+import Data.HashMap.Strict (HashMap)
 import Data.HashSet (HashSet)
+import Data.List (intersperse, sortOn)
 import Data.Maybe
+import Data.Semigroup ((<>))
 import Data.Some
-import Data.Text (Text)
+import Data.Text (Text, toLower, unpack)
 import Data.Typeable ((:~:)(Refl), eqT, Typeable)
 import GHC.Generics
 import Prelude
 import TextShow (TextShow(..))
 import qualified Data.ByteString.Lazy as LB
+import qualified Data.HashMap.Strict as HashMap
+import qualified Data.Text as TT
 import qualified Data.Text.Encoding as Text
 import qualified Text.Regex.Base as R
 import qualified Text.Regex.PCRE as PCRE
 import qualified TextShow as TS
 
 import Duckling.AmountOfMoney.Types (AmountOfMoneyData)
+import Duckling.CreditCardNumber.Types (CreditCardNumberData)
 import Duckling.Distance.Types (DistanceData)
 import Duckling.Duration.Types (DurationData)
 import Duckling.Email.Types (EmailData)
@@ -50,7 +57,7 @@ import Duckling.Numeral.Types (NumeralData)
 import Duckling.Ordinal.Types (OrdinalData)
 import Duckling.PhoneNumber.Types (PhoneNumberData)
 import Duckling.Quantity.Types (QuantityData)
-import Duckling.Regex.Types (GroupMatch)
+import Duckling.Regex.Types
 import Duckling.Resolve
 import Duckling.Temperature.Types (TemperatureData)
 import Duckling.Time.Types (TimeData)
@@ -93,6 +100,7 @@ class (Show a, Typeable a, Typeable (DimensionData  a)) =>
 data Dimension a where
   RegexMatch :: Dimension GroupMatch
   AmountOfMoney :: Dimension AmountOfMoneyData
+  CreditCardNumber :: Dimension CreditCardNumberData
   Distance :: Dimension DistanceData
   Duration :: Dimension DurationData
   Email :: Dimension EmailData
@@ -110,6 +118,7 @@ data Dimension a where
 -- Show
 instance Show (Dimension a) where
   show RegexMatch = "RegexMatch"
+  show CreditCardNumber = "CreditCardNumber"
   show Distance = "Distance"
   show Duration = "Duration"
   show Email = "Email"
@@ -151,10 +160,13 @@ instance Hashable (Dimension a) where
   hashWithSalt s Url                 = hashWithSalt s (12::Int)
   hashWithSalt s Volume              = hashWithSalt s (13::Int)
   hashWithSalt s (CustomDimension _) = hashWithSalt s (14::Int)
+  hashWithSalt s CreditCardNumber    = hashWithSalt s (15::Int)
 
 instance GEq Dimension where
   geq RegexMatch RegexMatch = Just Refl
   geq RegexMatch _ = Nothing
+  geq CreditCardNumber CreditCardNumber = Just Refl
+  geq CreditCardNumber _ = Nothing
   geq Distance Distance = Just Refl
   geq Distance _ = Nothing
   geq Duration Duration = Just Refl
@@ -309,3 +321,21 @@ regex = Regex . R.makeRegexOpts compOpts execOpts
 
 dimension :: Typeable a => Dimension a -> PatternItem
 dimension value = Predicate $ isDimension value
+
+-- -----------------------------------------------------------------
+-- Rule Construction helpers
+
+singleStringLookupRule :: HashMap Text a -> Text -> (a -> Maybe Token) -> Rule
+singleStringLookupRule hashMap name production = Rule
+  { name = name
+  , pattern = [ regex $ unpack regexString ]
+  , prod = \case
+      (Token RegexMatch (GroupMatch (match:_)):_) ->
+        HashMap.lookup (toLower match) hashMap >>= production
+      _ -> Nothing
+  }
+  where
+    regexString =
+      "(" <> mconcat
+      (intersperse "|" $ sortOn (negate . TT.length) $ HashMap.keys hashMap)
+      <> ")"

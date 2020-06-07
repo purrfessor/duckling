@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE OverloadedStrings #-}
@@ -147,8 +146,7 @@ allExamples = concat
              , "ti singaporske dollars"
              ]
   , examples (simple THB 10)
-             [ "10 baht"
-             , "10 bhat"
+             [ "10 bhat"
              , "10 thai baht"
              , "10 thai bhat"
              , "10 thailand baht"

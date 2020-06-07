@@ -2,27 +2,28 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE NoRebindableSyntax #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Duckling.Time.VI.Rules
-  ( rules ) where
+  ( rules
+  ) where
 
 import Prelude
 import Data.Text (Text)
 import qualified Data.Text as Text
 
 import Duckling.Dimensions.Types
+import Duckling.Duration.Helpers (isGrain)
 import Duckling.Numeral.Helpers (parseInt)
 import Duckling.Numeral.Types (NumeralData(..))
 import Duckling.Ordinal.Types (OrdinalData(..))
 import Duckling.Regex.Types
 import Duckling.Time.Helpers
-import Duckling.Time.Types (TimeData (..))
+import Duckling.Time.Types (TimeData(..))
 import Duckling.Types
 import qualified Duckling.Numeral.Types as TNumeral
 import qualified Duckling.Ordinal.Types as TOrdinal
@@ -618,7 +619,7 @@ ruleTimeTrc :: Rule
 ruleTimeTrc = Rule
   { name = "<time> trước"
   , pattern =
-    [ dimension Time
+    [ Predicate $ not . isGrainFinerThan TG.Day
     , regex "tr(ư)(ớ)c|v(ừ)a r(ồ)i"
     ]
   , prod = \tokens -> case tokens of
@@ -923,7 +924,7 @@ ruleGingSinh :: Rule
 ruleGingSinh = Rule
   { name = "giáng sinh"
   , pattern =
-    [ regex "(ng(à)y )(xmas|christmas|gi(á)ng sinh)?"
+    [ regex "(ngày )?(xmas|christmas|giáng sinh)"
     ]
   , prod = \_ -> tt $ monthDay 12 25
   }
@@ -932,7 +933,7 @@ ruleNgyHmKia :: Rule
 ruleNgyHmKia = Rule
   { name = "ngày hôm kia"
   , pattern =
-    [ regex "(ng(à)y )?h(ô)m kia"
+    [ regex "(ngày )?hôm kia"
     ]
   , prod = \_ -> tt . cycleNth TG.Day $ - 2
   }

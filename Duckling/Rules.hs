@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE GADTs #-}
@@ -22,6 +21,7 @@ import Duckling.Dimensions
 import Duckling.Dimensions.Types
 import Duckling.Locale
 import Duckling.Types
+import qualified Duckling.Rules.AF as AFRules
 import qualified Duckling.Rules.AR as ARRules
 import qualified Duckling.Rules.Common as CommonRules
 import qualified Duckling.Rules.BG as BGRules
@@ -46,9 +46,11 @@ import qualified Duckling.Rules.IT as ITRules
 import qualified Duckling.Rules.JA as JARules
 import qualified Duckling.Rules.KA as KARules
 import qualified Duckling.Rules.KM as KMRules
+import qualified Duckling.Rules.KN as KNRules
 import qualified Duckling.Rules.KO as KORules
 import qualified Duckling.Rules.LO as LORules
 import qualified Duckling.Rules.ML as MLRules
+import qualified Duckling.Rules.MN as MNRules
 import qualified Duckling.Rules.MY as MYRules
 import qualified Duckling.Rules.NB as NBRules
 import qualified Duckling.Rules.NE as NERules
@@ -57,8 +59,11 @@ import qualified Duckling.Rules.PL as PLRules
 import qualified Duckling.Rules.PT as PTRules
 import qualified Duckling.Rules.RO as RORules
 import qualified Duckling.Rules.RU as RURules
+import qualified Duckling.Rules.SK as SKRules
 import qualified Duckling.Rules.SV as SVRules
+import qualified Duckling.Rules.SW as SWRules
 import qualified Duckling.Rules.TA as TARules
+import qualified Duckling.Rules.TH as THRules
 import qualified Duckling.Rules.TR as TRRules
 import qualified Duckling.Rules.UK as UKRules
 import qualified Duckling.Rules.VI as VIRules
@@ -85,6 +90,7 @@ rulesFor' (Locale lang Nothing) dim =
 
 -- | Default rules when no locale, for backward compatibility.
 defaultRules :: Lang -> Some Dimension -> [Rule]
+defaultRules AF = AFRules.defaultRules
 defaultRules AR = ARRules.defaultRules
 defaultRules BG = BGRules.defaultRules
 defaultRules BN = BNRules.defaultRules
@@ -108,9 +114,11 @@ defaultRules IT = ITRules.defaultRules
 defaultRules JA = JARules.defaultRules
 defaultRules KA = KARules.defaultRules
 defaultRules KM = KMRules.defaultRules
+defaultRules KN = KNRules.defaultRules
 defaultRules KO = KORules.defaultRules
 defaultRules LO = LORules.defaultRules
 defaultRules ML = MLRules.defaultRules
+defaultRules MN = MNRules.defaultRules
 defaultRules MY = MYRules.defaultRules
 defaultRules NB = NBRules.defaultRules
 defaultRules NE = NERules.defaultRules
@@ -119,14 +127,18 @@ defaultRules PL = PLRules.defaultRules
 defaultRules PT = PTRules.defaultRules
 defaultRules RO = RORules.defaultRules
 defaultRules RU = RURules.defaultRules
+defaultRules SK = SKRules.defaultRules
 defaultRules SV = SVRules.defaultRules
+defaultRules SW = SWRules.defaultRules
 defaultRules TA = TARules.defaultRules
+defaultRules TH = THRules.defaultRules
 defaultRules TR = TRRules.defaultRules
 defaultRules UK = UKRules.defaultRules
 defaultRules VI = VIRules.defaultRules
 defaultRules ZH = ZHRules.defaultRules
 
 localeRules :: Lang -> Region -> Some Dimension -> [Rule]
+localeRules AF = AFRules.localeRules
 localeRules AR = ARRules.localeRules
 localeRules BG = BGRules.localeRules
 localeRules BN = BNRules.localeRules
@@ -150,9 +162,11 @@ localeRules IT = ITRules.localeRules
 localeRules JA = JARules.localeRules
 localeRules KA = KARules.localeRules
 localeRules KM = KMRules.localeRules
+localeRules KN = KNRules.localeRules
 localeRules KO = KORules.localeRules
 localeRules LO = LORules.localeRules
 localeRules ML = MLRules.localeRules
+localeRules MN = MNRules.localeRules
 localeRules MY = MYRules.localeRules
 localeRules NB = NBRules.localeRules
 localeRules NE = NERules.localeRules
@@ -161,14 +175,18 @@ localeRules PL = PLRules.localeRules
 localeRules PT = PTRules.localeRules
 localeRules RO = RORules.localeRules
 localeRules RU = RURules.localeRules
+localeRules SK = SKRules.localeRules
 localeRules SV = SVRules.localeRules
+localeRules SW = SWRules.localeRules
 localeRules TA = TARules.localeRules
+localeRules TH = THRules.localeRules
 localeRules TR = TRRules.localeRules
 localeRules UK = UKRules.localeRules
 localeRules VI = VIRules.localeRules
 localeRules ZH = ZHRules.localeRules
 
 langRules :: Lang -> Some Dimension -> [Rule]
+langRules AF = AFRules.langRules
 langRules AR = ARRules.langRules
 langRules BG = BGRules.langRules
 langRules BN = BNRules.langRules
@@ -184,6 +202,7 @@ langRules FR = FRRules.langRules
 langRules GA = GARules.langRules
 langRules HE = HERules.langRules
 langRules HI = HIRules.langRules
+langRules KN = KNRules.langRules
 langRules HR = HRRules.langRules
 langRules HU = HURules.langRules
 langRules ID = IDRules.langRules
@@ -195,6 +214,7 @@ langRules KM = KMRules.langRules
 langRules KO = KORules.langRules
 langRules LO = LORules.langRules
 langRules ML = MLRules.langRules
+langRules MN = MNRules.langRules
 langRules MY = MYRules.langRules
 langRules NB = NBRules.langRules
 langRules NE = NERules.langRules
@@ -203,8 +223,11 @@ langRules PL = PLRules.langRules
 langRules PT = PTRules.langRules
 langRules RO = RORules.langRules
 langRules RU = RURules.langRules
+langRules SK = SKRules.langRules
 langRules SV = SVRules.langRules
+langRules SW = SWRules.langRules
 langRules TA = TARules.langRules
+langRules TH = THRules.langRules
 langRules TR = TRRules.langRules
 langRules UK = UKRules.langRules
 langRules VI = VIRules.langRules

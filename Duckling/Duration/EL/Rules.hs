@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE GADTs #-}
@@ -159,7 +158,7 @@ ruleHalfDuration = Rule
     , dimension TimeGrain
     ]
   , prod = \tokens -> case tokens of
-      (_:Token TimeGrain g:_) -> Token Duration <$> timesOneAndAHalf g 0
+      (_:Token TimeGrain g:_) -> Token Duration <$> nPlusOneHalf g 0
       _ -> Nothing
   }
 
@@ -173,7 +172,7 @@ ruleDurationAndAHalf = Rule
     ]
   , prod = \tokens -> case tokens of
       (Token Numeral nd:_:Token TimeGrain grain:_) ->
-        timesOneAndAHalf grain (floor $ TNumeral.value nd) >>=
+        nPlusOneHalf grain (floor $ TNumeral.value nd) >>=
         Just . Token Duration
       _ -> Nothing
   }
@@ -189,7 +188,7 @@ ruleDurationAndAHalfOneWord = Rule
   , prod = \tokens -> case tokens of
       (Token RegexMatch (GroupMatch (num:_)):Token TimeGrain grain:_) ->
         HashMap.lookup (Text.toLower num) numeralMapEL >>=
-        timesOneAndAHalf grain >>=
+        nPlusOneHalf grain >>=
         Just . Token Duration
       _ -> Nothing
   }

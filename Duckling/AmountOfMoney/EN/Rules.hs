@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE GADTs #-}
@@ -140,6 +139,18 @@ ruleACurrency = Rule
       (_:
        Token AmountOfMoney fd:
        _) -> Just . Token AmountOfMoney $ fd {TAmountOfMoney.value = Just 1}
+      _ -> Nothing
+  }
+
+ruleAbsorbA :: Rule
+ruleAbsorbA = Rule
+  { name = "a <amount-of-money>"
+  , pattern =
+    [ regex "an?"
+    , Predicate isSimpleAmountOfMoney
+    ]
+  , prod = \case
+      (_:Token AmountOfMoney fd:_) -> Just $ Token AmountOfMoney fd
       _ -> Nothing
   }
 
@@ -326,7 +337,7 @@ ruleIntervalMax :: Rule
 ruleIntervalMax = Rule
   { name = "under/less/lower/no more than <amount-of-money>"
   , pattern =
-    [ regex "under|(less|lower|not? more) than"
+    [ regex "under|at most|(less|lower|not? more) than"
     , Predicate isSimpleAmountOfMoney
     ]
   , prod = \tokens -> case tokens of
@@ -341,7 +352,7 @@ ruleIntervalMin :: Rule
 ruleIntervalMin = Rule
   { name = "over/above/at least/more than <amount-of-money>"
   , pattern =
-    [ regex "over|above|at least|more than"
+    [ regex "over|above|at least|(more|not? less) than"
     , Predicate isSimpleAmountOfMoney
     ]
   , prod = \tokens -> case tokens of
@@ -356,6 +367,7 @@ rules :: [Rule]
 rules =
   [ ruleUnitAmount
   , ruleACurrency
+  , ruleAbsorbA
   , ruleBucks
   , ruleCent
   , ruleADollarCoin

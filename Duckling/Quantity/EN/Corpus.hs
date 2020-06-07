@@ -2,23 +2,42 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE OverloadedStrings #-}
 
 module Duckling.Quantity.EN.Corpus
-  ( corpus ) where
+  ( corpus
+  , latentCorpus
+  ) where
 
 import Prelude
 import Data.String
 
 import Duckling.Quantity.Types
+import Duckling.Resolve (Options(..))
 import Duckling.Testing.Types
 
 corpus :: Corpus
 corpus = (testContext, testOptions, allExamples)
+
+
+latentCorpus :: Corpus
+latentCorpus = (testContext, testOptions {withLatent = True}, latentExamples)
+  where
+    latentExamples = concat
+      [
+      examples (simple Unnamed 4 Nothing)
+                [ "around 4"
+                , "four"
+                , "~ four"
+                ]
+      ,
+      examples (simple Unnamed 38.5 Nothing)
+                [ "about 38.5"
+                ]
+      ]
 
 allExamples :: [Example]
 allExamples = concat
@@ -46,6 +65,7 @@ allExamples = concat
              ]
   , examples (simple Cup 3 (Just "sugar"))
              [ "3 Cups of sugar"
+             , "3 Cups of SugAr"
              ]
   , examples (simple Cup 0.75 Nothing)
              [ "3/4 cup"

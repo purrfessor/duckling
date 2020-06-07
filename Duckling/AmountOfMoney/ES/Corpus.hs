@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE OverloadedStrings #-}
@@ -64,5 +63,19 @@ allExamples = concat
              [ "15 Pt"
              , "15pta"
              , "15Ptas"
+             ]
+  , examples (between Dollar (10, 20))
+             [ "entre 10 y 20 dólares"
+             , "de $10 y $20"
+             , "$10 - 20 dólares"
+             , "10 - 20 $"
+             ]
+  , examples (under Dollar 10)
+             [ "menos de 10 dólares"
+             , "no más de $10"
+             ]
+  , examples (above Dollar 10)
+             [ "no menos de 10 dólares"
+             , "más de $10"
              ]
   ]

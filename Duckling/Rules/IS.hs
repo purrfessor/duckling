@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE GADTs #-}
@@ -17,6 +16,7 @@ module Duckling.Rules.IS
 import Duckling.Dimensions.Types
 import Duckling.Locale
 import Duckling.Types
+import qualified Duckling.Email.IS.Rules as Email
 import qualified Duckling.Numeral.IS.Rules as Numeral
 
 defaultRules :: Some Dimension -> [Rule]
@@ -27,10 +27,11 @@ localeRules region (This (CustomDimension dim)) = dimLocaleRules region dim
 localeRules _ _ = []
 
 langRules :: Some Dimension -> [Rule]
+langRules (This CreditCardNumber) = []
 langRules (This Distance) = []
 langRules (This Duration) = []
 langRules (This Numeral) = Numeral.rules
-langRules (This Email) = []
+langRules (This Email) = Email.rules
 langRules (This AmountOfMoney) = []
 langRules (This Ordinal) = []
 langRules (This PhoneNumber) = []

@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE GADTs #-}
@@ -11,17 +10,19 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Duckling.Time.NB.Rules
-  ( rules ) where
+  ( rules
+  ) where
 
 import Data.Text (Text)
 import Prelude
 
 import Duckling.Dimensions.Types
+import Duckling.Duration.Helpers (isGrain)
 import Duckling.Numeral.Helpers (parseInt)
-import Duckling.Ordinal.Types (OrdinalData (..))
+import Duckling.Ordinal.Types (OrdinalData(..))
 import Duckling.Regex.Types
 import Duckling.Time.Helpers
-import Duckling.Time.Types (TimeData (..))
+import Duckling.Time.Types (TimeData(..))
 import Duckling.Types
 import qualified Data.Text as Text
 import qualified Duckling.Ordinal.Types as TOrdinal

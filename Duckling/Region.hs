@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE DeriveAnyClass #-}
@@ -23,23 +22,31 @@ import qualified TextShow as TS
 -- | ISO 3166-1 alpha-2 Country code (includes regions and territories).
 -- See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
 data Region
-  = AU
+  = AR
+  | AU
   | BE
   | BZ
   | CA
+  | CL
   | CN
+  | CO
+  | ES
   | GB
   | HK
   | IE
   | IN
   | JM
+  | MN
+  | MX
   | MO
   | NL
   | NZ
+  | PE
   | PH
   | TT
   | TW
   | US
+  | VE
   | ZA
   deriving (Bounded, Enum, Eq, Generic, Hashable, Ord, Read, Show)
 

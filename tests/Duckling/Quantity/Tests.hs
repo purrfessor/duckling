@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 module Duckling.Quantity.Tests
@@ -20,6 +19,8 @@ import qualified Duckling.Quantity.FR.Tests as FR
 import qualified Duckling.Quantity.HR.Tests as HR
 import qualified Duckling.Quantity.KM.Tests as KM
 import qualified Duckling.Quantity.KO.Tests as KO
+import qualified Duckling.Quantity.MN.Tests as MN
+import qualified Duckling.Quantity.NL.Tests as NL
 import qualified Duckling.Quantity.PT.Tests as PT
 import qualified Duckling.Quantity.RO.Tests as RO
 import qualified Duckling.Quantity.RU.Tests as RU
@@ -33,6 +34,8 @@ tests = testGroup "Quantity Tests"
   , HR.tests
   , KM.tests
   , KO.tests
+  , MN.tests
+  , NL.tests
   , PT.tests
   , RO.tests
   , RU.tests

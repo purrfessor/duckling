@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE GADTs #-}
@@ -89,7 +88,7 @@ ruleDurationNumeralMore = Rule
   { name = "<integer> more <unit-of-duration>"
   , pattern =
     [ Predicate isNatural
-    , regex "more|less"
+    , regex "more|additional|extra|less|fewer"
     , dimension TimeGrain
     ]
   , prod = \case
@@ -102,7 +101,8 @@ ruleDurationDotNumeralHours :: Rule
 ruleDurationDotNumeralHours = Rule
   { name = "number.number hours"
   , pattern =
-    [ regex "(\\d+)\\.(\\d+) *hours?"
+    [ regex "(\\d+)\\.(\\d+)"
+    , Predicate $ isGrain TG.Hour
     ]
   , prod = \case
       (Token RegexMatch (GroupMatch (h:m:_)):_) -> do
@@ -126,6 +126,19 @@ ruleDurationAndHalfHour = Rule
       _ -> Nothing
   }
 
+ruleDurationAndHalfMinute :: Rule
+ruleDurationAndHalfMinute = Rule
+  { name = "<integer> and a half minutes"
+  , pattern =
+    [ Predicate isNatural
+    , regex "and (an? )?half min(ute)?s?"
+    ]
+  , prod = \case
+      (Token Numeral NumeralData{TNumeral.value = v}:_) ->
+        Just . Token Duration . duration TG.Second $ 30 + 60 * floor v
+      _ -> Nothing
+  }
+
 ruleDurationA :: Rule
 ruleDurationA = Rule
   { name = "a <unit-of-duration>"
@@ -146,7 +159,7 @@ ruleDurationHalfATimeGrain = Rule
     , dimension TimeGrain
     ]
   , prod = \case
-      (_:Token TimeGrain grain:_) -> Token Duration <$> timesOneAndAHalf grain 0
+      (_:Token TimeGrain grain:_) -> Token Duration <$> nPlusOneHalf grain 0
       _ -> Nothing
   }
 
@@ -159,7 +172,24 @@ ruleDurationOneGrainAndHalf = Rule
     , regex "and (a )?half"
     ]
   , prod = \case
-      (_:Token TimeGrain grain:_) -> Token Duration <$> timesOneAndAHalf grain 1
+      (_:Token TimeGrain grain:_) -> Token Duration <$> nPlusOneHalf grain 1
+      _ -> Nothing
+  }
+
+ruleDurationHoursAndMinutes :: Rule
+ruleDurationHoursAndMinutes = Rule
+  { name = "<integer> hour and <integer>"
+  , pattern =
+    [ Predicate isNatural
+    , regex "hours?( and)?"
+    , Predicate isNatural
+    ]
+  , prod = \case
+      (Token Numeral h:
+       _:
+       Token Numeral m:
+       _) -> Just . Token Duration . duration TG.Minute $
+         (floor $ TNumeral.value m) + 60 * floor (TNumeral.value h)
       _ -> Nothing
   }
 
@@ -175,6 +205,7 @@ ruleDurationPrecision = Rule
         _ -> Nothing
   }
 
+-- | NOTE: Oxford comma is not supported.
 ruleCompositeDurationCommasAnd :: Rule
 ruleCompositeDurationCommasAnd = Rule
   { name = "composite <duration> (with ,/and)"
@@ -209,20 +240,39 @@ ruleCompositeDuration = Rule
       _ -> Nothing
   }
 
+ruleCompositeDurationAnd :: Rule
+ruleCompositeDurationAnd = Rule
+  { name = "composite <duration> and <duration>"
+  , pattern =
+    [ dimension Duration
+    , regex ",|and"
+    , dimension Duration
+    ]
+  , prod = \case
+      (Token Duration DurationData{TDuration.value = v, TDuration.grain = g}:
+       _:
+       Token Duration dd@DurationData{TDuration.grain = dg}:
+       _) | g > dg -> Just . Token Duration $ duration g (v) <> dd
+      _ -> Nothing
+  }
+
 rules :: [Rule]
 rules =
-  [ ruleDurationQuarterOfAnHour
+  [ ruleCompositeDurationCommasAnd
+  , ruleDurationQuarterOfAnHour
   , ruleDurationHalfAnHourAbbrev
   , ruleDurationThreeQuartersOfAnHour
   , ruleDurationFortnight
   , ruleDurationNumeralMore
   , ruleDurationDotNumeralHours
   , ruleDurationAndHalfHour
+  , ruleDurationAndHalfMinute
   , ruleDurationA
   , ruleDurationHalfATimeGrain
   , ruleDurationOneGrainAndHalf
+  , ruleDurationHoursAndMinutes
   , ruleDurationPrecision
   , ruleNumeralQuotes
   , ruleCompositeDuration
-  , ruleCompositeDurationCommasAnd
+  , ruleCompositeDurationAnd
   ]

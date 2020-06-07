@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE GADTs #-}
@@ -11,7 +10,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Duckling.Time.EL.Rules
-  ( rules ) where
+  ( rules
+  ) where
 
 import Data.HashMap.Strict (HashMap)
 import Data.Text (Text)
@@ -20,14 +20,14 @@ import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Text as Text
 
 import Duckling.Dimensions.Types
-import Duckling.Duration.Helpers (duration)
-import Duckling.Duration.Types (DurationData (DurationData))
+import Duckling.Duration.Helpers (duration, isGrain)
+import Duckling.Duration.Types (DurationData(DurationData))
 import Duckling.Numeral.Helpers (parseInt, numeralMapEL)
-import Duckling.Numeral.Types (NumeralData (..))
-import Duckling.Ordinal.Types (OrdinalData (..), isBetween)
+import Duckling.Numeral.Types (NumeralData(..))
+import Duckling.Ordinal.Types (OrdinalData(..), isBetween)
 import Duckling.Regex.Types
 import Duckling.Time.Helpers
-import Duckling.Time.Types (TimeData (..))
+import Duckling.Time.Types (TimeData(..))
 import Duckling.Types
 import qualified Duckling.Numeral.Types as TNumeral
 import qualified Duckling.Ordinal.Types as TOrdinal

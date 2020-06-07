@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -446,26 +445,26 @@ allExamples = concat
              [ "ove zime"
              , "zimus"
              ]
-  , examples (datetime (2013, 12, 25, 0, 0, 0) Day)
+  , examples (datetimeHoliday (2013, 12, 25, 0, 0, 0) Day "christmas")
              [ "Bozic"
              , "zicbo"
              ]
-  , examples (datetime (2013, 12, 31, 0, 0, 0) Day)
+  , examples (datetimeHoliday (2013, 12, 31, 0, 0, 0) Day "new year's eve")
              [ "stara godina"
              ]
-  , examples (datetime (2014, 1, 1, 0, 0, 0) Day)
+  , examples (datetimeHoliday (2014, 1, 1, 0, 0, 0) Day "new year's day")
              [ "nova godina"
              ]
-  , examples (datetime (2013, 2, 14, 0, 0, 0) Day)
+  , examples (datetimeHoliday (2013, 2, 14, 0, 0, 0) Day "valentine's day")
              [ "valentinovo"
              ]
-  , examples (datetime (2013, 5, 12, 0, 0, 0) Day)
+  , examples (datetimeHoliday (2013, 5, 12, 0, 0, 0) Day "Mother's Day")
              [ "majcin dan"
              ]
-  , examples (datetime (2013, 6, 16, 0, 0, 0) Day)
+  , examples (datetimeHoliday (2013, 6, 16, 0, 0, 0) Day "Father's Day")
              [ "dan oceva"
              ]
-  , examples (datetime (2013, 10, 31, 0, 0, 0) Day)
+  , examples (datetimeHoliday (2013, 10, 31, 0, 0, 0) Day "halloween day")
              [ "noc vjestica"
              ]
   , examples (datetimeInterval ((2013, 2, 12, 18, 0, 0), (2013, 2, 13, 0, 0, 0)) Hour)

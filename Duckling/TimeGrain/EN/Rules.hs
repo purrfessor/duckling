@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE OverloadedStrings #-}
@@ -22,7 +21,7 @@ import qualified Duckling.TimeGrain.Types as TG
 
 grains :: [(Text, String, TG.Grain)]
 grains = [ ("second (grain) ", "sec(ond)?s?",      TG.Second)
-         , ("minute (grain)" , "min(ute)?s?",      TG.Minute)
+         , ("minute (grain)" , "m(in(ute)?s?)?",   TG.Minute)
          , ("hour (grain)"   , "h(((ou)?rs?)|r)?", TG.Hour)
          , ("day (grain)"    , "days?",            TG.Day)
          , ("week (grain)"   , "weeks?",           TG.Week)

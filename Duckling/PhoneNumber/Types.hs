@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE DeriveAnyClass #-}
@@ -51,4 +50,7 @@ data PhoneNumberValue = PhoneNumberValue { value :: Text }
   deriving (Eq, Ord, Show)
 
 instance ToJSON PhoneNumberValue where
-  toJSON (PhoneNumberValue value) = object [ "value" .= value ]
+  toJSON (PhoneNumberValue value) = object
+    [ "value" .= value
+    , "type"  .= ("value" :: Text)
+    ]

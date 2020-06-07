@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE GADTs #-}
@@ -19,13 +18,14 @@ import Prelude
 import qualified Data.Text as Text
 
 import Duckling.Dimensions.Types
-import Duckling.Duration.Helpers (duration)
+import Duckling.Duration.Helpers (duration, isGrain)
 import Duckling.Numeral.Helpers (parseInt)
-import Duckling.Numeral.Types (NumeralData (..))
-import Duckling.Ordinal.Types (OrdinalData (..))
+import Duckling.Numeral.Types (NumeralData(..))
+import Duckling.Ordinal.Types (OrdinalData(..))
 import Duckling.Regex.Types
 import Duckling.Time.Helpers
-import Duckling.Time.Types (TimeData (..))
+import Duckling.Time.HolidayHelpers
+import Duckling.Time.Types (TimeData(..))
 import Duckling.Types
 import qualified Duckling.Numeral.Types as TNumeral
 import qualified Duckling.Ordinal.Types as TOrdinal
@@ -84,7 +84,6 @@ ruleHolidays = mkRuleHolidays
   [ ( "Nieuwjaarsdag", "nieuwjaars?(dag)?", monthDay  1  1 )
   , ( "Valentijnsdag", "valentijns?(dag)?", monthDay  2 14 )
   , ( "Halloween", "hall?oween?", monthDay 10 31 )
-  , ( "Koningsdag", "konings?dag", monthDay  4 27 )
   , ( "Allerheiligen", "allerheiligen?|aller heiligen?", monthDay 11  1 )
   , ( "Kerstavond", "kerstavond", monthDay 12 24 )
   , ( "Tweede Kerstdag", "tweede kerstdag", monthDay 12 26 )
@@ -94,6 +93,12 @@ ruleHolidays = mkRuleHolidays
   , ( "Vaderdag", "vaderdag", nthDOWOfMonth 3 7 6 )
   ]
 
+ruleComputedHolidays' :: [Rule]
+ruleComputedHolidays' = mkRuleHolidays'
+  [
+    ( "Koningsdag", "king's day|koningsdag"
+    , computeKingsDay )
+  ]
 ruleRelativeMinutesToOrAfterIntegerPartOfDay :: Rule
 ruleRelativeMinutesToOrAfterIntegerPartOfDay = Rule
   { name = "relative minutes to|till|before|after <integer> (time-of-day)"
@@ -698,7 +703,7 @@ ruleByTheEndOfTime :: Rule
 ruleByTheEndOfTime = Rule
   { name = "by the end of <time>"
   , pattern =
-    [ regex "tot (het)? einde (van)?|voor"
+    [ regex "tot( het)? einde( van)?"
     , dimension Time
     ]
   , prod = \tokens -> case tokens of
@@ -1592,3 +1597,4 @@ rules =
   ++ ruleMonths
   ++ ruleSeasons
   ++ ruleHolidays
+  ++ ruleComputedHolidays'

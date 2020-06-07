@@ -2,8 +2,8 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
+{- HLINT ignore "Use foldr1OrError" -}
 
 
 {-# LANGUAGE DeriveAnyClass #-}
@@ -241,7 +241,6 @@ data Predicate
   | ReplaceIntersectPredicate Predicate Predicate Predicate
   deriving Show
 
-{-# ANN runPredicate ("HLint: ignore Use foldr1OrError" :: String) #-}
 runPredicate :: Predicate -> SeriesPredicate
 runPredicate EmptyPredicate{} = \_ _ -> ([], [])
 runPredicate (SeriesPredicate (NoShow p)) = p
@@ -429,6 +428,21 @@ weekdayPredicate = mkSeriesPredicate series
       | dow == 1 = (Time.addDays (-3) d, 5)
       | dow == 7 = (Time.addDays (-2) d, 5)
       | otherwise = (Time.addDays (-1) d, dow-1)
+
+-- Predicate for periodic events with known `given`
+periodicPredicate :: TG.Grain -> Int -> TimeObject -> Predicate
+periodicPredicate grain delta given = mkSeriesPredicate series
+  where
+  series t _ = (past', future')
+    where
+    (past, future) = timeSequence grain delta given
+    (past', future') = if timeBefore t given
+      then
+        let (newer, older) = span (timeBefore t) past
+        in (older, reverse newer ++ future)
+      else
+        let (older, newer) = span (`timeBefore` t) future
+        in (reverse older ++ past, newer)
 
 toMidnight :: Time.Day -> Time.UTCTime
 toMidnight = flip Time.UTCTime (Time.timeOfDayToTime Time.midnight)

@@ -45,6 +45,7 @@ Please look into [this directory](https://github.com/facebook/duckling/blob/mast
 | Dimension | Example input | Example value output
 | --------- | ------------- | --------------------
 | `AmountOfMoney` | "42€" | `{"value":42,"type":"value","unit":"EUR"}`
+| `CreditCardNumber` | "4111-1111-1111-1111" | `{"value":"4111111111111111","issuer":"visa"}`
 | `Distance` | "6 miles" | `{"value":6,"type":"value","unit":"mile"}`
 | `Duration` | "3 mins" | `{"value":3,"minute":3,"unit":"minute","normalized":{"value":180,"unit":"second"}}`
 | `Email` | "duckling-team@fb.com" | `{"value":"duckling-team@fb.com"}`
@@ -68,11 +69,12 @@ $ stack build :duckling-regen-exe && stack exec duckling-regen-exe && stack test
 It's important to regenerate the classifiers after updating the code and before
 running the test suite.
 
-To extend Duckling's support for a dimension in a given language, typically 3
+To extend Duckling's support for a dimension in a given language, typically 4
 files need to be updated:
 * `Duckling/<Dimension>/<Lang>/Rules.hs`
 * `Duckling/<Dimension>/<Lang>/Corpus.hs`
 * `Duckling/Dimensions/<Lang>.hs` (if not already present in `Duckling/Dimensions/Common.hs`)
+* `Duckling/Rules/<Lang>.hs`
 
 To add a new language:
 * Make sure that the language code used follows the [ISO-639-1 standard](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
@@ -110,4 +112,4 @@ in|within|after <duration> (in two minutes)
 ```
 
 ## License
-Duckling is BSD-licensed. We also provide an additional patent grant.
+Duckling is BSD-licensed.

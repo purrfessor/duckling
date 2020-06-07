@@ -2,8 +2,7 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE DeriveAnyClass #-}
@@ -63,6 +62,7 @@ data Currency
   | KWD
   | LBP
   | MAD
+  | MNT
   | MYR
   | NOK
   | NZD
@@ -118,6 +118,7 @@ instance ToJSON Currency where
   toJSON KWD     = "KWD"
   toJSON LBP     = "LBP"
   toJSON MAD     = "MAD"
+  toJSON MNT     = "MNT"
   toJSON MYR     = "MYR"
   toJSON NOK     = "NOK"
   toJSON NZD     = "NZD"

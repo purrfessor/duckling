@@ -2,18 +2,14 @@
 -- All rights reserved.
 --
 -- This source code is licensed under the BSD-style license found in the
--- LICENSE file in the root directory of this source tree. An additional grant
--- of patent rights can be found in the PATENTS file in the same directory.
+-- LICENSE file in the root directory of this source tree.
 
 
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE NoRebindableSyntax #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Duckling.Time.EN.US.Rules
-  ( rules
-  , rulesBackwardCompatible
-  ) where
+module Duckling.Time.EN.US.Rules where
 
 import Data.Maybe
 import Prelude
@@ -274,6 +270,23 @@ rulePeriodicHolidays' = mkRuleHolidays'
       in intersectWithReplacement emancipationDay tentative alternative )
   ]
 
+-- duplicating "Tuesday" regex as we lost the internal info
+tuesday :: String
+tuesday = "(tuesdays?|tue?\\.?)"
+
+ruleComputedHolidays :: [Rule]
+ruleComputedHolidays = mkRuleHolidays
+  [ ( "Super Tuesday", "super\\s+" ++ tuesday, superTuesday )
+  , ( "Mini-Tuesday"
+    , "mini(\\s*\\-\\s*|\\s+)" ++ tuesday
+    , yearMonthDay 2004 2 3
+    )
+  , ( "Super Tuesday"
+    , "((mega\\s+)?giga|tsunami|super\\s+duper)\\s+" ++ tuesday
+    , yearMonthDay 2008 2 5
+    )
+  ]
+
 ruleComputedHolidays' :: [Rule]
 ruleComputedHolidays' = mkRuleHolidays'
   [ ( "Global Youth Service Day", "national youth service day"
@@ -292,6 +305,7 @@ rulesBackwardCompatible =
 
 rules :: [Rule]
 rules = rulesBackwardCompatible
+  ++ ruleComputedHolidays
+  ++ ruleComputedHolidays'
   ++ rulePeriodicHolidays
   ++ rulePeriodicHolidays'
-  ++ ruleComputedHolidays'
