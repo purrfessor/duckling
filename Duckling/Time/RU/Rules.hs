@@ -1142,8 +1142,8 @@ rulePartOfDays = Rule
         (start, end) <- case Text.toLower match of
               "утро"  -> Just (hour False 4, hour False 12)
               "день"  -> Just (hour False 12, hour False 14)
-              "вечер" -> Just (hour False 18, hour False 0)
-              "ночь"  -> Just (hour False 18, hour False 0)
+              "вечер" -> Just (hour False 18, hour False 22)
+              "ночь"  -> Just (hour False 22, hour False 0)
               _       -> Nothing
         Token Time . partOfDay . mkLatent <$> interval TTime.Open start end
       _ -> Nothing
@@ -1160,8 +1160,8 @@ rulePartOfDays2 = Rule
         (start, end) <- case Text.toLower match of
               "утром"   -> Just (hour False 4, hour False 12)
               "днем"    -> Just (hour False 12, hour False 14)
-              "вечером" -> Just (hour False 18, hour False 0)
-              "ночью"   -> Just (hour False 18, hour False 0)
+              "вечером" -> Just (hour False 18, hour False 22)
+              "ночью"   -> Just (hour False 22, hour False 0)
               _         -> Nothing
         Token Time . partOfDay . notLatent <$> interval TTime.Open start end
       _ -> Nothing
